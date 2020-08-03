@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">ActivityTaskDemo</string>
-    <string name="title_home">Home</string>
+    <string name="title_activity">Activity</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <string name="activity_standard1">Standard 1</string>
+    <string name="activity_standard2">Standard 2</string>
+    <string name="activity_standard3">Standard 3</string>
+    <string name="activity_single_top1">Single Top 1</string>
+    <string name="activity_single_top2">Single Top 2</string>
+    <string name="activity_single_top3">Single Top 3</string>
+    <string name="activity_single_task1">Single Task 1</string>
+    <string name="activity_single_task2">Single Task 2</string>
+    <string name="activity_single_task3">Single Task 3</string>
+    <string name="activity_single_instance1">Single Instance 1</string>
+    <string name="activity_single_instance2">Single Instance 2</string>
+    <string name="activity_single_instance3">Single Instance 3</string>
+
+    <string name="task_affinity2">task2</string>
 </resources>
