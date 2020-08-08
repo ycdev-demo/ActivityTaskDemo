@@ -17,12 +17,15 @@ import me.ycdev.android.demo.activitytask.ui.demo.SingleTask3Activity
 import me.ycdev.android.demo.activitytask.ui.demo.SingleTop1Activity
 import me.ycdev.android.demo.activitytask.ui.demo.SingleTop2Activity
 import me.ycdev.android.demo.activitytask.ui.demo.SingleTop3Activity
+import me.ycdev.android.demo.activitytask.ui.demo.SpecialClearOnLaunchActivity
+import me.ycdev.android.demo.activitytask.ui.demo.SpecialFinishOnLaunchActivity
+import me.ycdev.android.demo.activitytask.ui.demo.SpecialReparentingActivity
 import me.ycdev.android.demo.activitytask.ui.demo.Standard1Activity
 import me.ycdev.android.demo.activitytask.ui.demo.Standard2Activity
 import me.ycdev.android.demo.activitytask.ui.demo.Standard3Activity
 
 class ActivityFragment : Fragment() {
-
+    private lateinit var binding: FragmentActivityBinding
     private lateinit var activityViewModel: ActivityViewModel
 
     override fun onCreateView(
@@ -31,60 +34,79 @@ class ActivityFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         activityViewModel = ViewModelProvider(this).get(ActivityViewModel::class.java)
-        val binding = FragmentActivityBinding.inflate(inflater)
+        binding = FragmentActivityBinding.inflate(inflater)
 
         binding.standard1.setOnClickListener {
-            val intent = Intent(requireActivity(), Standard1Activity::class.java)
-            startActivity(intent)
+            startActivity(Standard1Activity::class.java)
         }
         binding.standard2.setOnClickListener {
-            val intent = Intent(requireActivity(), Standard2Activity::class.java)
-            startActivity(intent)
+            startActivity(Standard2Activity::class.java)
         }
         binding.standard3.setOnClickListener {
-            val intent = Intent(requireActivity(), Standard3Activity::class.java)
-            startActivity(intent)
+            startActivity(Standard3Activity::class.java)
         }
 
         binding.singleTop1.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleTop1Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleTop1Activity::class.java)
         }
         binding.singleTop2.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleTop2Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleTop2Activity::class.java)
         }
         binding.singleTop3.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleTop3Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleTop3Activity::class.java)
         }
 
         binding.singleTask1.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleTask1Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleTask1Activity::class.java)
         }
         binding.singleTask2.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleTask2Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleTask2Activity::class.java)
         }
         binding.singleTask3.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleTask3Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleTask3Activity::class.java)
         }
 
         binding.singleInstance1.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleInstance1Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleInstance1Activity::class.java)
         }
         binding.singleInstance2.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleInstance2Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleInstance2Activity::class.java)
         }
         binding.singleInstance3.setOnClickListener {
-            val intent = Intent(requireActivity(), SingleInstance3Activity::class.java)
-            startActivity(intent)
+            startActivity(SingleInstance3Activity::class.java)
+        }
+
+        binding.reparenting.setOnClickListener {
+            startActivity(SpecialReparentingActivity::class.java)
+        }
+        binding.finishOnLaunch.setOnClickListener {
+            startActivity(SpecialFinishOnLaunchActivity::class.java)
+        }
+        binding.clearOnLaunch.setOnClickListener {
+            startActivity(SpecialClearOnLaunchActivity::class.java)
         }
 
         return binding.root
+    }
+
+    private fun startActivity(cls: Class<*>) {
+        val intent = Intent(requireActivity(), cls)
+        var flags = 0
+        if (binding.flagsNewTask.isChecked) {
+            flags = flags or Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        if (binding.flagsSingleTop.isChecked) {
+            flags = flags or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        if (binding.flagsClearTop.isChecked) {
+            flags = flags or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        if (binding.flagsClearTask.isChecked) {
+            flags = flags or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        if (flags != 0) {
+            intent.flags = flags
+        }
+        startActivity(intent)
     }
 }

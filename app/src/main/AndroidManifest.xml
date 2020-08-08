@@ -55,7 +55,7 @@
         <activity
             android:name=".ui.demo.SingleTask3Activity"
             android:launchMode="singleTask"
-            android:taskAffinity="" />
+            android:taskAffinity="me.ycdev.task2" />
 
         <activity
             android:name=".ui.demo.SingleInstance1Activity"
@@ -67,7 +67,27 @@
         <activity
             android:name=".ui.demo.SingleInstance3Activity"
             android:launchMode="singleInstance"
-            android:taskAffinity="" />
+            android:taskAffinity="me.ycdev.task2" />
+
+        <activity
+            android:name=".ui.demo.SpecialReparentingActivity"
+            android:launchMode="standard"
+            android:allowTaskReparenting="true" />
+        <activity
+            android:name=".ui.demo.SpecialFinishOnLaunchActivity"
+            android:launchMode="standard"
+            android:finishOnTaskLaunch="true" />
+        <activity
+            android:name=".ui.demo.SpecialClearOnLaunchActivity"
+            android:label="@string/activity_special_clear_on_launch"
+            android:launchMode="standard"
+            android:clearTaskOnLaunch="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
     </application>
 
 </manifest>

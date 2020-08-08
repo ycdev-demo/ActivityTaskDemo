@@ -55,5 +55,6 @@ dependencies {
     androidTestImplementation deps.test.rules
     androidTestImplementation deps.test.truth
     androidTestImplementation deps.test.espressoCore
+    androidTestImplementation deps.test.uiautomator
     androidTestImplementation deps.ycdev.androidTest
 }

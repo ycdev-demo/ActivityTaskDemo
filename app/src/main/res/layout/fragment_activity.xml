@@ -1,86 +1,145 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ui.activity.ActivityFragment">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/standard1"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:orientation="horizontal">
+        <CheckBox
+            android:id="@+id/flags_new_task"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_standard1" />
-        <Button
-            android:id="@+id/standard2"
+            android:text="@string/flags_new_task" />
+        <CheckBox
+            android:id="@+id/flags_single_top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_standard2" />
-        <Button
-            android:id="@+id/standard3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_standard3" />
-        <Button
-            android:id="@+id/single_top1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_top1" />
-        <Button
-            android:id="@+id/single_top2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_top2" />
-        <Button
-            android:id="@+id/single_top3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_top3" />
-        <Button
-            android:id="@+id/single_task1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_task1" />
-        <Button
-            android:id="@+id/single_task2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_task2" />
-        <Button
-            android:id="@+id/single_task3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_task3" />
-        <Button
-            android:id="@+id/single_instance1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_instance1" />
-        <Button
-            android:id="@+id/single_instance2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_instance2" />
-        <Button
-            android:id="@+id/single_instance3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/activity_single_instance3" />
+            android:text="@string/flags_single_top" />
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:orientation="horizontal">
+        <CheckBox
+            android:id="@+id/flags_clear_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/flags_clear_top" />
+        <CheckBox
+            android:id="@+id/flags_clear_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/flags_clear_task" />
+    </LinearLayout>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="10dp"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/standard1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_standard1" />
+            <Button
+                android:id="@+id/standard2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_standard2" />
+            <Button
+                android:id="@+id/standard3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_standard3" />
+            <Button
+                android:id="@+id/single_top1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_top1" />
+            <Button
+                android:id="@+id/single_top2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_top2" />
+            <Button
+                android:id="@+id/single_top3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_top3" />
+            <Button
+                android:id="@+id/single_task1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_task1" />
+            <Button
+                android:id="@+id/single_task2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_task2" />
+            <Button
+                android:id="@+id/single_task3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_task3" />
+            <Button
+                android:id="@+id/single_instance1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_instance1" />
+            <Button
+                android:id="@+id/single_instance2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_instance2" />
+            <Button
+                android:id="@+id/single_instance3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_single_instance3" />
+            <Button
+                android:id="@+id/reparenting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_special_reparenting" />
+            <Button
+                android:id="@+id/finish_on_launch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_special_finish_on_launch" />
+            <Button
+                android:id="@+id/clear_on_launch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="@string/activity_special_clear_on_launch" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

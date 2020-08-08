@@ -17,5 +17,12 @@
     <string name="activity_single_instance2">Single Instance 2</string>
     <string name="activity_single_instance3">Single Instance 3</string>
 
-    <string name="task_affinity2">task2</string>
+    <string name="activity_special_reparenting">Reparenting</string>
+    <string name="activity_special_finish_on_launch">Finish On Launch</string>
+    <string name="activity_special_clear_on_launch">Clear On Launch</string>
+
+    <string name="flags_new_task">NewTask</string>
+    <string name="flags_single_top">SingleTop</string>
+    <string name="flags_clear_top">ClearTop</string>
+    <string name="flags_clear_task">ClearTask</string>
 </resources>

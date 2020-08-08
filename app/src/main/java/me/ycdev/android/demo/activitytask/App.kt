@@ -11,6 +11,7 @@ class App : Application() {
         Timber.tag(TAG).i("app start...")
 
         ActivityTaskTracker.init(this)
+        ActivityTaskTracker.enableDebugLog(true)
     }
 
     companion object {

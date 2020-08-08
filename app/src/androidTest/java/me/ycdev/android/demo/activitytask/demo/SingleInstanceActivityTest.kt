@@ -1,49 +1,37 @@
 package me.ycdev.android.demo.activitytask.demo
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isChecked
+import androidx.test.espresso.matcher.ViewMatchers.isNotChecked
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
-import me.ycdev.android.demo.activitytask.MainActivity
 import me.ycdev.android.demo.activitytask.R
 import me.ycdev.android.demo.activitytask.ui.demo.SingleInstance1Activity
 import me.ycdev.android.demo.activitytask.ui.demo.SingleInstance2Activity
 import me.ycdev.android.demo.activitytask.ui.demo.SingleInstance3Activity
-import me.ycdev.android.demo.activitytask.utils.ActivityUtils
-import me.ycdev.android.lib.common.activity.ActivityInfo
+import me.ycdev.android.demo.activitytask.ui.demo.Standard1Activity
+import me.ycdev.android.lib.common.activity.ActivityRunningState
 import me.ycdev.android.lib.common.activity.ActivityTaskTracker
 import me.ycdev.android.lib.test.ui.ScrollViewsAction
 import org.hamcrest.CoreMatchers.startsWith
-import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
-class SingleInstanceActivityTest {
-    @Before
-    fun setup() {
-        ActivityTaskTracker.enableDebugLog(true)
-        ActivityUtils.finishAndRemoveAllTasks(getContext())
-        assertThat(ActivityTaskTracker.getAllTasks()).hasSize(0)
-    }
-
-    private fun getContext(): Context = ApplicationProvider.getApplicationContext()
-
+class SingleInstanceActivityTest : ActivityTestBase() {
+    /**
+     * There will be 4 tasks. Every 'singleInstance' Activity has its own task.
+     */
     @Test
-    fun launchedByOnce() {
+    fun separateTask_self() {
+        ActivityTestHelper.clearAndStartMainActivity(getContext())
+
         val buttons = arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
         buttons.forEachIndexed { index, id ->
             val instanceId = index + 1
-            launchActivity<MainActivity>()
+
             onView(withId(id)).perform(ScrollViewsAction(), click())
             onView(withId(R.id.content)).check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
 
@@ -53,16 +41,17 @@ class SingleInstanceActivityTest {
     }
 
     @Test
-    fun launchedByMultipleTimes() {
+    fun onNewIntent() {
+        ActivityTestHelper.clearAndStartMainActivity(getContext())
+
         val buttons = arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
         buttons.forEachIndexed { index, id ->
             val instanceId = index + 1
+
             // first time
-            launchActivity<MainActivity>()
             onView(withId(id)).perform(ScrollViewsAction(), click())
             onView(withId(R.id.content)).check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
             // second time
-            launchActivity<MainActivity>()
             onView(withId(id)).perform(ScrollViewsAction(), click())
             onView(withId(R.id.content)).check(matches(withText(startsWith("Single Instance $instanceId\nonNewIntent"))))
             // finish and open again
@@ -71,12 +60,17 @@ class SingleInstanceActivityTest {
             onView(withId(R.id.content)).check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
 
             val allTasks = ActivityTaskTracker.getAllTasks()
-            assertThat(allTasks).hasSize(1 + instanceId)
+            assertThat(allTasks).hasSize(2)
+
+            pressBack() // to back to MainActivity
         }
     }
 
+    /**
+     * Other normal Activity will start in its own task.
+     */
     @Test
-    fun launchOtherActivity() {
+    fun launchOther_separateTask() {
         val clazzs = arrayListOf(
             SingleInstance1Activity::class.java,
             SingleInstance2Activity::class.java,
@@ -84,70 +78,172 @@ class SingleInstanceActivityTest {
         )
         clazzs.forEachIndexed { index, clazz ->
             val instanceId = index + 1
-            val scenario = launchActivity<Activity>(Intent(getContext(), clazz))
-            // wait for the Activity ready
-            onView(withId(R.id.content)).check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
-            scenario.onActivity {
-                val intent = Intent(it, MainActivity::class.java)
-                it.startActivity(intent)
-            }
-            // wait for MainActivity ready
-            onView(withId(R.id.standard1)).check(matches(withText(startsWith("Standard"))))
+            ActivityTestHelper.startDemoActivity(getContext(), clazz, "Single Instance $instanceId\nonCreate")
+            onView(withId(R.id.standard1)).perform(ScrollViewsAction(), click())
+            onView(withId(R.id.content)).check(matches(withText(startsWith("Standard 1\nonCreate"))))
 
             val allTasks = ActivityTaskTracker.getAllTasks()
-            assertThat(allTasks).hasSize(2)
+            assertThat(allTasks).hasSize(1 + instanceId)
             val activitiesMain = allTasks[0].getActivityStack()
             assertThat(activitiesMain).hasSize(1)
-            assertThat(activitiesMain[0].componentName.className).isEqualTo(MainActivity::class.java.name)
-            assertThat(activitiesMain[0].state).isEqualTo(ActivityInfo.State.Resumed)
-            val activitiesOther = allTasks[1].getActivityStack()
-            assertThat(activitiesOther).hasSize(1)
-            assertThat(activitiesOther[0].componentName.className).isEqualTo(clazzs[index].name)
-            assertThat(activitiesOther[0].state).isAnyOf(
-                ActivityInfo.State.Stopped,
-                ActivityInfo.State.Paused
-            )
+            assertThat(activitiesMain[0].componentName.className).isEqualTo(Standard1Activity::class.java.name)
+            assertThat(activitiesMain[0].state).isEqualTo(ActivityRunningState.State.Resumed)
 
-            // quit MainActivity
-            pressBack()
-            // the #close() had bug which will need to a 45 seconds timeout
-            scenario.onActivity {
-                it.finish()
-            }
-//            scenario.close()
+            pressBack() // quit "Standard 1"
         }
     }
 
+    /**
+     * FLAG_ACTIVITY_CLEAR_TASK will clear the task.
+     */
     @Test
-    fun flags_clearTask() {
-        val buttons = arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
-        val clazzs = arrayListOf(
-            SingleInstance1Activity::class.java,
-            SingleInstance2Activity::class.java,
-            SingleInstance3Activity::class.java
-        )
-        buttons.forEachIndexed { index, buttonId ->
-            val instanceId = index + 1
-            val clazz = clazzs[index]
+    fun flags_clearTask_focused() {
+        ActivityTestHelper.clearAndStartMainActivity(getContext())
 
-            // first time from MainActivity
-            val scenario = launchActivity<MainActivity>()
-            onView(withId(buttonId))
-                .perform(ScrollViewsAction(), click())
-            onView(withId(R.id.content))
-                .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+        arrayOf(false, true).forEach { newTask ->
+            val buttons =
+                arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
+            buttons.forEachIndexed { index, buttonId ->
+                val instanceId = index + 1
 
-            // launch it again from other place
-            scenario.onActivity { activity ->
-                val intent = Intent(getContext(), clazz)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                activity.startActivity(intent)
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+
+                // launch it again with flags: CLEAR_TASK
+                if (newTask) {
+                    onView(withId(R.id.flags_new_task)).perform(click()).check(matches(isChecked()))
+                } else {
+                    onView(withId(R.id.flags_new_task)).check(matches(isNotChecked()))
+                }
+                onView(withId(R.id.flags_clear_task)).perform(click()).check(matches(isChecked()))
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+
+                assertThat(ActivityTaskTracker.getAllTasks()).hasSize(2)
+
+                // go back to MainActivity
+                pressBack()
             }
-            onView(withId(R.id.content))
-                .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
-            assertThat(ActivityTaskTracker.getAllTasks()).hasSize(1 + instanceId)
+        }
+    }
 
-            scenario.close()
+    /**
+     * FLAG_ACTIVITY_CLEAR_TASK will clear the task.
+     */
+    @Test
+    fun flags_clearTask_notFocused() {
+        ActivityTestHelper.clearAndStartMainActivity(getContext())
+
+        arrayOf(false, true).forEach { newTask ->
+            val buttons =
+                arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
+            buttons.forEachIndexed { index, buttonId ->
+                val instanceId = index + 1
+
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+
+                onView(withId(R.id.standard1)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Standard 1\nonCreate"))))
+
+                // launch it again with flags: CLEAR_TASK
+                if (newTask) {
+                    onView(withId(R.id.flags_new_task)).perform(click()).check(matches(isChecked()))
+                } else {
+                    onView(withId(R.id.flags_new_task)).check(matches(isNotChecked()))
+                }
+                onView(withId(R.id.flags_clear_task)).perform(click()).check(matches(isChecked()))
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+
+                assertThat(ActivityTaskTracker.getAllTasks()).hasSize(2)
+
+                // go back to MainActivity
+                pressBack()
+                pressBack()
+            }
+        }
+    }
+
+    /**
+     * FLAG_ACTIVITY_CLEAR_TOP will NOT clear the task. #onNewIntent() will be called.
+     */
+    @Test
+    fun flags_clearTop_focused() {
+        ActivityTestHelper.clearAndStartMainActivity(getContext())
+
+        arrayOf(false, true).forEach { newTask ->
+            val buttons =
+                arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
+            buttons.forEachIndexed { index, buttonId ->
+                val instanceId = index + 1
+
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+
+                // launch it again with flags: CLEAR_TOP
+                if (newTask) {
+                    onView(withId(R.id.flags_new_task)).perform(click()).check(matches(isChecked()))
+                } else {
+                    onView(withId(R.id.flags_new_task)).check(matches(isNotChecked()))
+                }
+                onView(withId(R.id.flags_clear_top)).perform(click()).check(matches(isChecked()))
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonNewIntent"))))
+
+                assertThat(ActivityTaskTracker.getAllTasks()).hasSize(2)
+
+                // go back to MainActivity
+                pressBack()
+            }
+        }
+    }
+
+    /**
+     * FLAG_ACTIVITY_CLEAR_TOP will NOT clear the task. #onNewIntent() will be called.
+     */
+    @Test
+    fun flags_clearTop_notFocused() {
+        ActivityTestHelper.clearAndStartMainActivity(getContext())
+
+        arrayOf(false, true).forEach { newTask ->
+            val buttons =
+                arrayListOf(R.id.single_instance1, R.id.single_instance2, R.id.single_instance3)
+            buttons.forEachIndexed { index, buttonId ->
+                val instanceId = index + 1
+
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonCreate"))))
+
+                onView(withId(R.id.standard1)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Standard 1\nonCreate"))))
+
+                // launch it again with flags: CLEAR_TOP
+                if (newTask) {
+                    onView(withId(R.id.flags_new_task)).perform(click()).check(matches(isChecked()))
+                } else {
+                    onView(withId(R.id.flags_new_task)).check(matches(isNotChecked()))
+                }
+                onView(withId(R.id.flags_clear_top)).perform(click()).check(matches(isChecked()))
+                onView(withId(buttonId)).perform(ScrollViewsAction(), click())
+                onView(withId(R.id.content))
+                    .check(matches(withText(startsWith("Single Instance $instanceId\nonNewIntent"))))
+
+                assertThat(ActivityTaskTracker.getAllTasks()).hasSize(2)
+
+                // go back to MainActivity
+                pressBack()
+                pressBack()
+            }
         }
     }
 }
